@@ -15,7 +15,7 @@ type Pool struct {
 }
 
 type user struct {
-	id int
+	id string
 	ts int64
 }
 
@@ -38,11 +38,7 @@ func enqueue(w http.ResponseWriter, r *http.Request) {
 	}
 	if userID, ok := r.Form["user_id"]; ok {
 		var u = new(user)
-		u.id, err = strconv.Atoi(strings.Join(userID, ""))
-		if err != nil {
-			log.Println(err)
-			return
-		}
+		u.id = strings.Join(userID, "")
 		u.ts = time.Now().Unix()
 		pool.mu.Lock()
 		pool.usersPool = append(pool.usersPool, u)
@@ -59,26 +55,12 @@ func count(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	minuteAgo := time.Now().Unix() - 60
-	if pool.usersPool[length-1].ts < minuteAgo {
-		w.Write([]byte("0"))
-		return
-	}
-	n := 0
-	if pool.usersPool[0].ts < minuteAgo {
-		for {
-			if (pool.usersPool[n].ts == minuteAgo) || (minuteAgo < pool.usersPool[n].ts && minuteAgo > pool.usersPool[n-1].ts) {
-				break
-			} else if minuteAgo < pool.usersPool[n].ts {
-				n /= 2
-			} else if minuteAgo > pool.usersPool[n].ts {
-				n += n / 2
-			}
-		}
-	}
-	lastMinuteUsers := pool.usersPool[n:]
-	var usersCount = make(map[int]int)
+	n := binarySearch(pool.usersPool, minuteAgo)
+
+	pool.usersPool = pool.usersPool[n:]
+	var usersCount = make(map[string]int)
 	var robots int
-	for _, user := range lastMinuteUsers {
+	for _, user := range pool.usersPool {
 		usersCount[user.id]++
 		if usersCount[user.id] == 100 {
 			robots += 1
@@ -86,4 +68,27 @@ func count(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte(strconv.Itoa(robots)))
+}
+
+func binarySearch(arr []*user, element int64) int {
+	i := 0
+	j := len(arr) - 1
+	if element < arr[i].ts {
+		return i
+	}
+	if element > arr[j].ts {
+		return j
+	}
+	for i != j {
+		n := (i+j)/2 + 1
+		if arr[n].ts == element || (element > arr[n-1].ts && element < arr[n].ts) {
+			return n
+		}
+		if element < arr[n].ts {
+			j = n - 1
+		} else {
+			i = n + 1
+		}
+	}
+	return i
 }
