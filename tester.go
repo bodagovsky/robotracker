@@ -31,12 +31,12 @@ func main() {
 			fmt.Println("exiting program...")
 			os.Exit(1)
 		case robot:
-			rpm := rand.Intn(500)
+			rpm := rand.Intn(400) + 100
 			totalRPM += rpm
 			fmt.Printf("total RPS: %d\n", totalRPM/60)
 			go createNewRobot(rpm)
 		case user:
-			rpm := rand.Intn(95)
+			rpm := rand.Intn(99)
 			totalRPM += rpm
 			fmt.Printf("total RPS: %d\n", totalRPM/60)
 			go createNewRobot(rpm)
@@ -51,7 +51,7 @@ func main() {
 }
 
 func createNewRobot(rpm int) {
-	delayms := float64(60 / rpm) * 1000
+	delayms := int(float64(60) / float64(rpm) * 1000)
 	userID := strconv.Itoa(rand.Int())
 	req, err := http.NewRequest("GET", enqueue + fmt.Sprintf("/?user_id=%s", userID), nil)
 	if err != nil {
@@ -68,7 +68,7 @@ func createNewRobot(rpm int) {
 	}
 }
 func createNewReader(rpm int) {
-	delayms := float64(60 / rpm) * 1000
+	delayms := int(float64(60) / float64(rpm) * 1000)
 	req, err := http.NewRequest("GET", count, nil)
 	if err != nil {
 		fmt.Println(err)
