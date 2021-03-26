@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"math/rand"
 	"net/http"
 	"os"
@@ -32,20 +31,20 @@ func main() {
 			fmt.Println("exiting program...")
 			os.Exit(1)
 		case robot:
-			rpm := math.Min(float64(rand.Int()+100), 500)
-			totalRPM += int(rpm)
+			rpm := rand.Intn(500)
+			totalRPM += rpm
 			fmt.Printf("total RPS: %d\n", totalRPM/60)
-			go createNewRobot(int(rpm))
+			go createNewRobot(rpm)
 		case user:
-			rpm := math.Min(float64(rand.Int()+1), 50)
-			totalRPM += int(rpm)
+			rpm := rand.Intn(95)
+			totalRPM += rpm
 			fmt.Printf("total RPS: %d\n", totalRPM/60)
-			go createNewRobot(int(rpm))
+			go createNewRobot(rpm)
 		case counter:
-			rpm := math.Min(float64(rand.Int()+100), 99)
-			totalRPM += int(rpm)
+			rpm := rand.Intn(99)
+			totalRPM += rpm
 			fmt.Printf("total RPS: %d\n", totalRPM/60)
-			go createNewReader(int(rpm))
+			go createNewReader(rpm)
 		default:
 		}
 	}
@@ -61,7 +60,6 @@ func createNewRobot(rpm int) {
 	}
 	client := http.Client{}
 	for {
-		//_, err := http.Get(enqueue + fmt.Sprintf("/?user_id=%s", userID))
 		_, err = client.Do(req)
 		if err != nil {
 			fmt.Println(err)

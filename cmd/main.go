@@ -82,6 +82,10 @@ func binarySearch(arr []*user, element int64) int {
 	for i != j {
 		n := (i+j)/2 + 1
 		if arr[n].ts == element || (element > arr[n-1].ts && element < arr[n].ts) {
+			//убедимся, что при наличии множества одинаковых значений мы выберем все имеющиеся
+			for n > 0 && arr[n].ts == arr[n-1].ts {
+				n--
+			}
 			return n
 		}
 		if element < arr[n].ts {
