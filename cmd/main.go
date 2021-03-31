@@ -122,5 +122,8 @@ func (u *UserQueue) Count() int {
 		}
 		u.head = u.head.next
 	}
+	if u.head == nil {
+		u.tail = nil
+	}
 	return u.robots
 }
