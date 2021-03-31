@@ -1,15 +1,15 @@
 package main
 
-import "time"
-
 type node struct {
 	u    *user
 	next *node
 }
 
 type userQueue struct {
-	head *node
-	tail *node
+	robots   int
+	usersMap map[string]int
+	head     *node
+	tail     *node
 }
 
 func (u *userQueue) enqueue(usr *user) {
@@ -18,25 +18,20 @@ func (u *userQueue) enqueue(usr *user) {
 		u.tail = u.head
 		return
 	}
+	u.usersMap[usr.id]++
+	if u.usersMap[usr.id] > 100 {
+		u.robots++
+	}
 	u.tail.next = &node{u: usr}
 	u.tail = u.tail.next
-	minuteAgo := time.Now().Unix() - 60
+	minuteAgo := usr.ts - 60
 	if u.head.u.ts < minuteAgo {
+		u.usersMap[u.head.u.id]--
+		if u.usersMap[u.head.u.id] <= 100 {
+			u.robots--
+		}
 		u.head = u.head.next
 	}
 	return
 
-}
-
-func (u userQueue) count() int {
-	var counter = make(map[string]int)
-	var robots int
-	for u.head != nil {
-		counter[u.head.u.id]++
-		if counter[u.head.u.id] == 100 {
-			robots++
-		}
-		u.head = u.head.next
-	}
-	return robots
 }

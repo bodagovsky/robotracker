@@ -20,7 +20,9 @@ type user struct {
 }
 
 var pool = &Pool{
-	usersPool: &userQueue{},
+	usersPool: &userQueue{
+		usersMap: make(map[string]int),
+	},
 	mu:        &sync.Mutex{},
 }
 
@@ -47,9 +49,6 @@ func enqueue(w http.ResponseWriter, r *http.Request) {
 }
 
 func count(w http.ResponseWriter, r *http.Request) {
-	pool.mu.Lock()
-	defer pool.mu.Unlock()
-	robots := pool.usersPool.count()
-	w.Write([]byte(strconv.Itoa(robots)))
+	w.Write([]byte(strconv.Itoa(pool.usersPool.robots)))
 }
 
