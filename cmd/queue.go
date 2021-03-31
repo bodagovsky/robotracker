@@ -27,7 +27,7 @@ func (u *userQueue) enqueue(usr *user) {
 	u.tail.next = &node{u: usr}
 	u.tail = u.tail.next
 	minuteAgo := usr.ts - 60
-	if u.head.u.ts < minuteAgo {
+	for u.head != nil && u.head.u.ts < minuteAgo {
 		u.usersMap[u.head.u.id]--
 		if u.usersMap[u.head.u.id] <= 100 {
 			u.robots--
