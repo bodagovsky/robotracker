@@ -40,7 +40,7 @@ func (u *userQueue) enqueue(usr *user) {
 
 func (u userQueue) count() int {
 	minuteAgo := time.Now().Unix() - 60
-	for u.head != nil && u.head.u.ts < ts {
+	for u.head != nil && u.head.u.ts < minuteAgo {
 		u.usersMap[u.head.u.id]--
 		if u.usersMap[u.head.u.id] < 100 {
 			u.robots--
