@@ -23,7 +23,7 @@ var pool = &Pool{
 	usersPool: &userQueue{
 		usersMap: make(map[string]int),
 	},
-	mu:        &sync.Mutex{},
+	mu: &sync.Mutex{},
 }
 
 func main() {
@@ -49,6 +49,8 @@ func enqueue(w http.ResponseWriter, r *http.Request) {
 }
 
 func count(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(strconv.Itoa(pool.usersPool.robots)))
+	pool.mu.Lock()
+	defer pool.mu.Unlock()
+	robots := pool.usersPool.count()
+	w.Write([]byte(strconv.Itoa(robots)))
 }
-

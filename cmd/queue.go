@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type node struct {
 	u    *user
 	next *node
@@ -34,4 +36,16 @@ func (u *userQueue) enqueue(usr *user) {
 	}
 	return
 
+}
+
+func (u *userQueue) count() int {
+	ts := time.Now().Unix()
+	for u.head != nil && u.head.u.ts < ts {
+		u.usersMap[u.head.u.id]--
+		if u.usersMap[u.head.u.id] < 100 {
+			u.robots--
+		}
+		u.head = u.head.next
+	}
+	return u.robots
 }
