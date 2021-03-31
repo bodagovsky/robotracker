@@ -38,7 +38,7 @@ func (u *userQueue) enqueue(usr *user) {
 
 }
 
-func (u *userQueue) count() int {
+func (u userQueue) count() int {
 	ts := time.Now().Unix()
 	for u.head != nil && u.head.u.ts < ts {
 		u.usersMap[u.head.u.id]--
