@@ -112,16 +112,15 @@ func (u *UserQueue) Enqueue(usr *user) {
 
 func (u *UserQueue) Count() int {
 	minuteAgo := time.Now().Unix() - 60
-	head := (*u).head
-	for head != nil && head.u.ts < minuteAgo {
-		u.usersMap[head.u.id].c--
-		if u.usersMap[head.u.id].c < 100 {
-			if u.usersMap[head.u.id].isRobot {
-				u.usersMap[head.u.id].isRobot = false
+	for u.head != nil && u.head.u.ts < minuteAgo {
+		u.usersMap[u.head.u.id].c--
+		if u.usersMap[u.head.u.id].c <= 100 {
+			if u.usersMap[u.head.u.id].isRobot {
+				u.usersMap[u.head.u.id].isRobot = false
 				u.robots--
 			}
 		}
-		head = head.next
+		u.head = u.head.next
 	}
 	return u.robots
 }
